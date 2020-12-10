@@ -65,7 +65,7 @@ def create_studio_domain(config):
         DomainName=domain_name,
         AuthMode='IAM',
         DefaultUserSettings=default_user_settings,
-        SubnetIds=subnet_ids.split(','),
+        SubnetIds=subnet_ids,
         VpcId=vpc_id
     )
 
