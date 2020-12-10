@@ -10,11 +10,11 @@ Parameters:
     Description: "user profile name "
     Default: "DefaultUser"
   VPCId:
-    Type: String
+    Type: AWS::EC2::VPC::Id
     Description: VPC Id
     Default: "vpc-xxxxxx"
   SubnetIds:
-    Type: String
+    Type: List<AWS::EC2::Subnet::Id>
     Description: Subnet Ids
     Default: "subnet-xxxxx"
 
