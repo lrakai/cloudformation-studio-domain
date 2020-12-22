@@ -52,7 +52,7 @@ def handle_delete(event, context):
 def create_app(config):
     domain_id = config['DomainId']
     user_profile_name = config['UserProfileName']
-    app_name = f'sagemaker-data-wrang-ml-m5-4xlarge-{time.time_ns}'
+    app_name = f'sagemaker-data-wrang-ml-m5-4xlarge-{time.time_ns()}'
 
     response = client.create_app(
         DomainId=domain_id,
