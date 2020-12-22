@@ -36,7 +36,7 @@ def handle_delete(event, context):
     domain_id = event['ResourceProperties']['DomainId']
     user_profile_name = event['ResourceProperties']['UserProfileName']
     try:
-        client.ddescribe_app(
+        client.describe_app(
             DomainId=domain_id, UserProfileName=user_profile_name,
             AppType='KernelGateway',
             AppName=app_name)
