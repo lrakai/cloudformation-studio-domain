@@ -81,13 +81,20 @@ def create_app(config):
 
 
 def delete_app(domain_id, user_profile_name, app_type, app_name):
-    response = client.delete_app(
-        DomainId=domain_id,
-        UserProfileName=user_profile_name,
-        AppType=app_type,
-        AppName=app_name
-    )
     deleted = False
+    try:
+        response = client.delete_app(
+            DomainId=domain_id,
+            UserProfileName=user_profile_name,
+            AppType=app_type,
+            AppName=app_name
+        )
+    except ClientError as error:
+        if error.response['Error']['Code'] == 'ValidationException':
+            print('Deleted')
+            deleted = True
+            return
+
     while not deleted:
         try:
             client.describe_app(
