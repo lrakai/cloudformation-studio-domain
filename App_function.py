@@ -32,7 +32,6 @@ def handle_create(event, context):
 
 def handle_delete(event, context):
     print('Received delete event')
-    json.dumps(event)
     app_name = event['PhysicalResourceId']
     domain_id = event['ResourceProperties']['DomainId']
     user_profile_name = event['ResourceProperties']['UserProfileName']
