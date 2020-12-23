@@ -69,7 +69,7 @@ def create_app(config):
     while not created:
         response = client.describe_app(
             DomainId=domain_id, UserProfileName=user_profile_name,
-            AppType='KernelGateway',
+            AppType=app_type,
             AppName=app_name
         )
         time.sleep(5)
