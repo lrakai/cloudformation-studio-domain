@@ -92,10 +92,12 @@ def delete_app(domain_id, user_profile_name, app_type, app_name):
     except ClientError as error:
         if error.response['Error']['Code'] == 'ValidationException':
             print('Deleted')
+            deleted = True
+            return
 
     while not deleted:
         try:
-            client.describe_app(
+            describe_response = client.describe_app(
                 DomainId=domain_id, UserProfileName=user_profile_name,
                 AppType=app_type,
                 AppName=app_name)
@@ -104,5 +106,8 @@ def delete_app(domain_id, user_profile_name, app_type, app_name):
                 print('Deleted')
                 deleted = True
                 return
+        if describe_response['Status'] == 'Deleted':
+            print('Deleted')
+            return
         time.sleep(5)
     return response
