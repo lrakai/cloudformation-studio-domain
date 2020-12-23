@@ -32,19 +32,21 @@ def handle_create(event, context):
 
 def handle_delete(event, context):
     print('Received delete event')
+    json.dumps(event)
     app_name = event['PhysicalResourceId']
     domain_id = event['ResourceProperties']['DomainId']
     user_profile_name = event['ResourceProperties']['UserProfileName']
+    app_type = event['ResourceProperties']['AppType']
     try:
         client.describe_app(
             DomainId=domain_id, UserProfileName=user_profile_name,
-            AppType='KernelGateway',
+            AppType=app_type,
             AppName=app_name)
     except ClientError as exception:
         cfnresponse.send(event, context, cfnresponse.SUCCESS,
                          {}, physicalResourceId=event['PhysicalResourceId'])
         return
-    delete_app(domain_id, user_profile_name, app_name)
+    delete_app(domain_id, user_profile_name, app_type, app_name)
     cfnresponse.send(event, context, cfnresponse.SUCCESS, {},
                      physicalResourceId=event['PhysicalResourceId'])
 
@@ -52,17 +54,16 @@ def handle_delete(event, context):
 def create_app(config):
     domain_id = config['DomainId']
     user_profile_name = config['UserProfileName']
-    app_name = f'sagemaker-data-wrang-ml-m5-4xlarge-{time.time_ns()}'
+    app_name = config['AppName']
+    app_type = config['AppType']
+    resource_spec = config['ResourceSpec']
 
     response = client.create_app(
         DomainId=domain_id,
         UserProfileName=user_profile_name,
-        AppType='KernelGateway',
+        AppType=app_type,
         AppName=app_name,
-        ResourceSpec={
-            'SageMakerImageArn': 'arn:aws:sagemaker:us-west-2:174368400705:image/sagemaker-data-wrangler-1.0',
-            'InstanceType': 'ml.m5.4xlarge'
-        }
+        ResourceSpec=resource_spec
     )
 
     created = False
@@ -80,18 +81,20 @@ def create_app(config):
     return response
 
 
-def delete_app(domain_id, user_profile_name, app_name):
+def delete_app(domain_id, user_profile_name, app_type, app_name):
     response = client.delete_app(
         DomainId=domain_id,
         UserProfileName=user_profile_name,
-        AppType='KernelGateway',
+        AppType=app_type,
         AppName=app_name
     )
     deleted = False
     while not deleted:
         try:
             client.describe_app(
-                DomainId=domain_id, UserProfileName=user_profile_name)
+                DomainId=domain_id, UserProfileName=user_profile_name,
+                AppType=app_type,
+                AppName=app_name)
         except ClientError as error:
             if error.response['Error']['Code'] == 'ResourceNotFound':
                 print('Deleted')
